@@ -1,0 +1,17 @@
+FROM python:3.11.5-slim
+
+WORKDIR /app
+
+COPY ./requirements.txt /app/
+RUN pip install -r requirements.txt
+
+COPY ./requirements-dev.txt /app/
+RUN pip install -r requirements-dev.txt
+
+COPY ./pylintrc ./pylintrc
+COPY ./.flake8 ./.flake8
+
+COPY ./src ./src
+
+RUN rm requirements.txt
+RUN rm requirements-dev.txt
