@@ -38,17 +38,26 @@ async def create_upload_file(
         list[UploadFile], File(description="A file read as UploadFile")
     ],
 ):
+    result = []
     for item in files:
         if item.content_type not in [
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ]:
             logger.info(f'ignoring file - {item.filename}')
             continue
+        tmp = []
         df = read_excel(item.file)
         consumer = AsyncQueueConsumer(
-            foo, asyncio.Queue(200)
+            data_to_consume=df.values.tolist(),
+            action=foo,
+            queue=asyncio.Queue(200)
         )
         for row in df.iterrows():
             _, data = row
-            await consumer.add_item(data)
-    return await consumer.execute()
+            tmp += await consumer.execute(data.tolist())
+        result += tmp
+        logger.info(
+            f'file processed - {item.filename}, consumed {len(tmp)} items'
+        )
+    logger.info(f'application done - consumed {len(result)} items')
+    return result
