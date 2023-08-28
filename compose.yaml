@@ -30,3 +30,16 @@ services:
     container_name: app-container
     env_file:
       - compose.env
+
+  database:
+    image: postgres:15
+    restart: always
+    container_name: app-database-container
+    env_file: compose.env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - ${EXPOSED_DATABASE_PORT}:5432
+
+volumes:
+  postgres:
