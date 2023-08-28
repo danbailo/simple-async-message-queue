@@ -21,7 +21,7 @@ class AsyncQueueConsumer:
         tasks = []
         while not self.queue.empty():
             item = await self.queue.get()
-            tasks.append(asyncio.create_task(self.action(item)))
+            tasks.append(asyncio.create_task(self.action(item=item)))
             self.queue.task_done()
         yield tasks
 
