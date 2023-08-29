@@ -21,6 +21,8 @@ class MyAbstractBaseModel(Model):
 class SampleModel(TimestampMixin, MyAbstractBaseModel):
     number = fields.IntField()
     data = fields.TextField()
+    processed = fields.BooleanField(default=False)
+    locked = fields.BooleanField(default=False)
 
     class Meta:
         table = 'sample'
@@ -35,5 +37,7 @@ class SampleOut(BaseModel):
     id: int
     number: int
     data: str
+    processed: bool
+    locked: bool
     created_at: datetime
     modified_at: datetime
