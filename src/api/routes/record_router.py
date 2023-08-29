@@ -58,7 +58,18 @@ async def create_record(body: SampleIn):
 
 @router.get('', response_model=list[SampleOut])
 async def get_records(
-    query: CommonQuery
+    query: CommonQuery,
+    id: str = None,
+    processed: bool = None,
+    locked: bool = None,
 ):
-    query = QuerySet(SampleModel).offset(query.offset).limit(query.limit)
+    params = {
+        'id': id,
+        'processed': processed,
+        'locked': locked,
+    }
+    params = {key: value for key, value in params.items() if value is not None}
+    query = QuerySet(SampleModel).filter(
+        **params
+    ).offset(query.offset).limit(query.limit)
     return await query.all()
