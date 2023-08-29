@@ -44,10 +44,11 @@ async def upload_file(
         )
         for item in data:
             tmp += await consumer.execute(item)
-        result += tmp
         logger.info(
             f'file processed - {file.filename}, consumed {len(tmp)} items'
         )
+        result += tmp
+
     end = time.monotonic()
     logger.info(f'application done - consumed {len(result)} items')
     logger.info(f'time elapsed - {end - start:0.2f}s')
