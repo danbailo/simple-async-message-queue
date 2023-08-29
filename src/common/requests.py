@@ -9,8 +9,10 @@ async def async_fetch(
     method: str,
     url: str,
     body: dict[str, Any] | None = None,
+    params: dict[str, Any] | None = None,
     cookies: dict[str, Any] | None = None,
     headers: dict[str, str] | None = None,
+    return_as_json: bool = True,
     raise_for_status: bool = False,
     timeout: int = 120
 ):
@@ -20,24 +22,44 @@ async def async_fetch(
         headers = {'Content-Type': 'application/json'}
     if not body:
         body = {}
+    if not params:
+        params = {}
     async with AsyncClient() as client:
         response = await client.request(
-            method, url, json=body, headers=headers, timeout=timeout
+            method, url,
+            json=body,
+            params=params,
+            headers=headers,
+            timeout=timeout
         )
     if raise_for_status:
         response.raise_for_status()
-    return response.json()
+    if return_as_json is True:
+        return response.json()
+    return response
 
 
 async def async_post_create_record(item: dict[str, Any]):
-    await asyncio.sleep(3)
     url = 'http://localhost:8000/record'
-    return await async_fetch(
-        'post', url, body=item
-    )
+    await asyncio.sleep(3)
+    return await async_fetch('post', url, body=item)
 
 
 async def async_get_fetch_and_lock():
     url = 'http://localhost:8000/record/fetch-and-lock'
     if (result := await async_fetch('get', url)):
         yield result
+
+
+async def async_post_complete_record(id_record: int, result: dict[str, Any]):
+    url = f'http://localhost:8000/record/complete/{id_record}'
+    return await async_fetch(
+        'post', url,
+        body=result,
+        raise_for_status=True
+    )
+
+
+async def async_get_unlock_record(id_record: int):
+    url = f'http://localhost:8000/record/unlock/{id_record}'
+    return await async_fetch('get', url)
