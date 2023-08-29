@@ -2,22 +2,26 @@ import asyncio
 
 from dataclasses import dataclass
 
-from common.requests import async_get_fetch_and_lock
+from typing import Any
+
+from common.consumer import Consumer
 from common.logger import logger
+
+import random
 
 
 @dataclass
-class SampleWorker:
+class SampleWorker(Consumer):
 
-    async def subscribe(self):
-        while True:
-            async for item in async_get_fetch_and_lock():
-                logger.info('processing item...')
-                await asyncio.sleep(5)
-                break
-            else:
-                logger.info('nothing to fetch, sleeping 5 seconds...')
-                await asyncio.sleep(5)
+    async def execute(self, item: dict[str, Any]):
+        time_to_sleep = random.randint(1, 10)
+        logger.info(f'time to execute item - {time_to_sleep}s')
+        await asyncio.sleep(time_to_sleep)
+
+        if random.choice([True, False]) is True:
+            return {'result': 'processed with successfully!'}
+
+        raise Exception('not lucky day, got error!')
 
 
 if __name__ == '__main__':
