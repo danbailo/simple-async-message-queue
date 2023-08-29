@@ -2,6 +2,8 @@ import random
 
 from fastapi import APIRouter, HTTPException
 
+from pydantic import BaseModel
+
 from tortoise.queryset import QuerySet
 
 from api.database.models import SampleIn, SampleOut, SampleModel
@@ -11,49 +13,53 @@ from .base_router import CommonQuery
 router = APIRouter()
 
 
+class CompleteRecordBody(BaseModel):
+    result: str
+
+
 @router.get('/fetch-and-lock', response_model=SampleOut | None)
 async def fetch_and_lock():
-    if not (result := await SampleModel.filter(
+    if not (item := await SampleModel.filter(
         processed=False, locked=False
     )):
         return
-    result = random.choice(result)
-    result.locked = True
-    await result.save()
-    return result
+    item = random.choice(item)
+    item.locked = True
+    await item.save()
+    return item
 
 
 @router.get('/lock/{id}', response_model=SampleOut)
 async def lock_record(id: int):
-    result = await SampleModel.get(id=id)
-    result.locked = True
-    await result.save()
-    return result
+    item = await SampleModel.get(id=id)
+    item.locked = True
+    await item.save()
+    return item
 
 
 @router.get('/unlock/{id}', response_model=SampleOut)
 async def unlock_record(id: int):
-    result = await SampleModel.get(id=id)
-    result.locked = False
-    await result.save()
-    return result
+    item = await SampleModel.get(id=id)
+    item.locked = False
+    await item.save()
+    return item
 
 
-@router.get('/complete/{id}', response_model=SampleOut)
-async def complete_record(id: int):
-    result = await SampleModel.get(id=id)
-    if not result.locked:
+@router.post('/complete/{id}', response_model=SampleOut)
+async def complete_record(id: int, body: CompleteRecordBody):
+    item = await SampleModel.get(id=id)
+    if not item.locked:
         raise HTTPException(500, 'The record was not locked!')
-    result.processed = True
-    await result.save()
-    return result
+    item.processed = True
+    item.result = body.result
+    await item.save()
+    return item
 
 
-@router.post('', response_model=SampleOut)
+@router.post('', status_code=204)
 async def create_record(body: SampleIn):
     sample_object = SampleModel(**body.model_dump())
     await sample_object.save()
-    return sample_object
 
 
 @router.get('', response_model=list[SampleOut])
