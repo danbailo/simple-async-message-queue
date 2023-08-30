@@ -42,7 +42,7 @@ async def async_fetch(
 async def async_post_create_record(item: dict[str, Any]):
     url = 'http://localhost:8000/record'
     await asyncio.sleep(3)
-    return await async_fetch('post', url, body=item)
+    return await async_fetch('post', url, body=item, return_as_json=False)
 
 
 async def async_post_fetch_and_lock(batch_size: int = 10):
