@@ -12,8 +12,9 @@ import random
 
 @dataclass
 class SampleWorker(Consumer):
+    batch_size: int = 10
 
-    async def execute(self, item: dict[str, Any]):
+    async def async_execute(self, item: dict[str, Any]):
         time_to_sleep = random.randint(1, 10)
         logger.info(f'time to execute item - {time_to_sleep}s')
         await asyncio.sleep(time_to_sleep)
