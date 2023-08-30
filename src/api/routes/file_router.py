@@ -1,5 +1,3 @@
-import asyncio
-
 import time
 
 from typing import Annotated
@@ -40,10 +38,10 @@ async def upload_file(
         consumer = AsyncQueueConsumer(
             data_to_consume=data,
             action=async_post_create_record,
-            queue=asyncio.Queue(400)
+            queue_size=400
         )
         for item in data:
-            tmp += await consumer.execute(item)
+            tmp += await consumer.async_execute(item)
         logger.info(
             f'file processed - {file.filename}, consumed {len(tmp)} items'
         )

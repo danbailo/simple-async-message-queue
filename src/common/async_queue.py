@@ -15,7 +15,21 @@ from .logger import logger
 class AsyncQueueConsumer:
     data_to_consume: list[Any]
     action: Coroutine
-    queue: asyncio.Queue = field(default=asyncio.Queue(200))
+    queue_size: int
+
+    _queue: asyncio.Queue = field(default=None, init=False)
+
+    @property
+    def queue(self):
+        return self._queue
+
+    @queue.setter
+    def queue(self, value):
+        if not self._queue and isinstance(value, asyncio.Queue):
+            self._queue = value
+
+    def __post_init__(self):
+        self._queue = asyncio.Queue(self.queue_size)
 
     async def _async_consume_queue(self):
         tasks = []
@@ -25,19 +39,20 @@ class AsyncQueueConsumer:
             self.queue.task_done()
         yield tasks
 
-    async def _hash_item(self, value: Any):
+    async def _async_hash_item(self, value: Any):
         value_as_string = json.dumps(value, default=str).encode()
         return hashlib.md5(value_as_string, usedforsecurity=False).hexdigest()
 
-    async def _check_if_is_last_element(self, item: Any):
-        last_element = await self._hash_item(self.data_to_consume[-1])
-        curr_element = await self._hash_item(item)
+    async def _async_check_if_is_last_element(self, item: Any):
+        last_element = await self._async_hash_item(self.data_to_consume[-1])
+        curr_element = await self._async_hash_item(item)
         return curr_element == last_element
 
-    async def execute(self, item: Any):
+    async def async_execute(self, item: Any):
         to_return = []
         await self.queue.put(item)
-        if self.queue.full() or await self._check_if_is_last_element(item):
+        is_last_element = await self._async_check_if_is_last_element(item)
+        if self.queue.full() or is_last_element is True:
             async for tasks in self._async_consume_queue():
                 to_return += await asyncio.gather(
                     *tasks, return_exceptions=True
