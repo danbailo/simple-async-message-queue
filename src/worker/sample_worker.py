@@ -23,7 +23,3 @@ class SampleWorker(Consumer):
             return {'result': 'processed with successfully!'}
 
         raise Exception('not lucky day, got error!')
-
-
-if __name__ == '__main__':
-    asyncio.run(SampleWorker().subscribe())

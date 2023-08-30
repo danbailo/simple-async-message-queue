@@ -17,7 +17,3 @@ class SampleWorkerAlwaysSuccess(Consumer):
         logger.info(f'time to execute item - {time_to_sleep}s')
         await asyncio.sleep(time_to_sleep)
         return {'result': 'processed with successfully!'}
-
-
-if __name__ == '__main__':
-    asyncio.run(SampleWorkerAlwaysSuccess().async_consume_single())
