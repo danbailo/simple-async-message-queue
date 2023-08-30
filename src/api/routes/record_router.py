@@ -1,5 +1,3 @@
-import random
-
 from fastapi import APIRouter, HTTPException
 
 from pydantic import BaseModel
@@ -17,16 +15,24 @@ class CompleteRecordBody(BaseModel):
     result: str
 
 
-@router.get('/fetch-and-lock', response_model=SampleOut | None)
-async def fetch_and_lock():
-    if not (item := await SampleModel.filter(
-        processed=False, locked=False
-    )):
-        return
-    item = random.choice(item)
-    item.locked = True
-    await item.save()
-    return item
+class FetchAndLockRecordBody(BaseModel):
+    batch_size: int
+
+
+@router.post('/fetch-and-lock', response_model=list[SampleOut])
+async def fetch_and_lock(body: FetchAndLockRecordBody):
+    if not (
+        result := await SampleModel
+        .filter(processed=False, locked=False)
+        .order_by('created_at')
+        .limit(body.batch_size)
+        .select_for_update(skip_locked=True)
+    ):
+        return []
+    for item in result:
+        item.locked = True
+    await SampleModel.bulk_update(result, fields=['locked'])
+    return result
 
 
 @router.get('/lock/{id}', response_model=SampleOut)

@@ -45,9 +45,11 @@ async def async_post_create_record(item: dict[str, Any]):
     return await async_fetch('post', url, body=item)
 
 
-async def async_get_fetch_and_lock():
+async def async_post_fetch_and_lock(batch_size: int = 10):
     url = 'http://localhost:8000/record/fetch-and-lock'
-    if (result := await async_fetch('get', url)):
+    if (result := await async_fetch(
+        'post', url, body={'batch_size': batch_size}
+    )):
         yield result
 
 
