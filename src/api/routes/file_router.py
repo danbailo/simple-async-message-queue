@@ -1,5 +1,3 @@
-import time
-
 from typing import Annotated
 
 from fastapi import APIRouter, File, UploadFile
@@ -26,12 +24,9 @@ async def upload_file(
         if file.content_type not in [
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ]:
-            logger.warning(f'ignoring file - {file.filename}')
+            logger.warning('ignoring file - %s', file.filename)
             continue
-        logger.info(
-            f'processing file - {file.filename}...'
-        )
-        start = time.monotonic()
+        logger.info('processing file - %s...', file.filename)
         tmp = []
         df = read_excel(file.file)
         data = df.to_dict(orient='records')
@@ -43,10 +38,7 @@ async def upload_file(
         for item in data:
             tmp += await consumer.async_execute(item)
         logger.info(
-            f'file processed - {file.filename}, consumed {len(tmp)} items'
+            'file processed - %s, consumed %s items', file.filename, len(tmp)
         )
         result += tmp
-
-    end = time.monotonic()
-    logger.info(f'application done - consumed {len(result)} items')
-    logger.info(f'time elapsed - {end - start:0.2f}s')
+    logger.info('application done - consumed %s items', len(result))

@@ -25,3 +25,9 @@ class InitWorker:
     def __new__(cls, worker: WorkerEnum):
         logger.info('initializing worker...')
         return cls.MAPPED_WORKER[worker]()
+
+    async def async_consume_batch(self):  # pylint: no-member
+        pass
+
+    async def async_consume_single(self):  # pylint: no-member
+        pass

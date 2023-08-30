@@ -16,7 +16,7 @@ class SampleWorker(Consumer):
 
     async def async_execute(self, item: dict[str, Any]):
         time_to_sleep = random.randint(1, 10)
-        logger.info(f'time to execute item - {time_to_sleep}s')
+        logger.info('time to execute item - %ss', time_to_sleep)
         await asyncio.sleep(time_to_sleep)
 
         if random.choice([True, False]) is True:

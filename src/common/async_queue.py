@@ -57,5 +57,5 @@ class AsyncQueueConsumer:
                 to_return += await asyncio.gather(
                     *tasks, return_exceptions=True
                 )
-            logger.info(f'consumed {len(to_return)} items')
+            logger.info('consumed %s items', len(to_return))
         return to_return
