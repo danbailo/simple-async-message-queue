@@ -4,6 +4,10 @@ from typing import Any
 
 from httpx import AsyncClient
 
+from common.env_var import get_env_var
+
+BASE_API_URL = get_env_var('BASE_API_URL')
+
 
 async def async_fetch(
     method: str,
@@ -40,13 +44,13 @@ async def async_fetch(
 
 
 async def async_post_create_record(item: dict[str, Any]):
-    url = 'http://localhost:8000/record'
+    url = f'{BASE_API_URL}/record'
     await asyncio.sleep(3)
     return await async_fetch('post', url, body=item, return_as_json=False)
 
 
 async def async_post_fetch_and_lock(batch_size: int = 10):
-    url = 'http://localhost:8000/record/fetch-and-lock'
+    url = f'{BASE_API_URL}/record/fetch-and-lock'
     if (result := await async_fetch(
         'post', url, body={'batch_size': batch_size}
     )):
@@ -54,7 +58,7 @@ async def async_post_fetch_and_lock(batch_size: int = 10):
 
 
 async def async_post_complete_record(id_record: int, result: dict[str, Any]):
-    url = f'http://localhost:8000/record/complete/{id_record}'
+    url = f'{BASE_API_URL}/record/complete/{id_record}'
     return await async_fetch(
         'post', url,
         body=result,
@@ -63,5 +67,5 @@ async def async_post_complete_record(id_record: int, result: dict[str, Any]):
 
 
 async def async_get_unlock_record(id_record: int):
-    url = f'http://localhost:8000/record/unlock/{id_record}'
+    url = f'{BASE_API_URL}/record/unlock/{id_record}'
     return await async_fetch('get', url)
