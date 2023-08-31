@@ -4,6 +4,8 @@ from fastapi import FastAPI
 
 from tortoise import Tortoise
 
+from common.env_var import get_env_var
+
 from .routes import file_router, record_router
 
 app = FastAPI()
@@ -12,7 +14,7 @@ app = FastAPI()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await Tortoise.init(
-        db_url="postgres://postgres:postgres@localhost:7998/postgres",
+        db_url=get_env_var('DATABASE_CONN_STRING'),
         modules={'models': ['api.database.models']}
     )
     # TODO: maybe use migrations to generate schemas instead of lifespan.
