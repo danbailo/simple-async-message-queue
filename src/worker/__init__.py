@@ -26,8 +26,8 @@ class InitWorker:
         logger.info('initializing worker...')
         return cls.MAPPED_WORKER[worker]()
 
-    async def async_consume_batch(self):  # pylint: no-member
+    async def async_consume_batch(self):  # pylint: disable=no-member
         pass
 
-    async def async_consume_single(self):  # pylint: no-member
+    async def async_consume_single(self):  # pylint: disable=no-member
         pass
