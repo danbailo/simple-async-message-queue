@@ -22,15 +22,15 @@ def callback():
 @app.command()
 @coro
 async def async_consume_batch(worker: WorkerEnum):
-    worker = InitWorker(worker)
-    await worker.async_consume_batch()
+    worker_obj = InitWorker(worker)
+    await worker_obj.async_consume_batch()
 
 
 @app.command()
 @coro
 async def async_consume_single(worker: WorkerEnum):
-    x = InitWorker(worker)
-    await x.async_consume_single()
+    worker_obj = InitWorker(worker)
+    await worker_obj.async_consume_single()
 
 
 @app.command()
