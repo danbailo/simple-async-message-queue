@@ -1,12 +1,10 @@
 import asyncio
 
-from functools import wraps
-
 from pandas import read_excel
 
 import typer
 
-from common.decorators import timeit
+from common.decorators import coro, timeit
 from common.logger import logger
 from common.requests import async_post_create_record
 
@@ -19,13 +17,6 @@ app = typer.Typer()
 @app.callback()
 def callback():
     pass
-
-
-def coro(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        return asyncio.run(f(*args, **kwargs))
-    return wrapper
 
 
 @app.command()
