@@ -8,3 +8,5 @@ RUN pip install -r requirements.txt
 COPY ./src ./src
 
 RUN rm requirements.txt
+
+WORKDIR /app/src

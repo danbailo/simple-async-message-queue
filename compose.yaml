@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.test
     image: simple-async-mq-test-image
     command: bash -c "python -m pylint src"
-    container_name: simple-async-mq-database-pylint-container
+    container_name: simple-async-mq-pylint-container
     env_file:
       - compose.env
 
@@ -15,7 +15,7 @@ services:
       dockerfile: Dockerfile.test
     image: simple-async-mq-test-image
     command: bash -c "python -m flake8 src"
-    container_name: simple-async-mq-database-flake8-container
+    container_name: simple-async-mq-flake8-container
     env_file:
       - compose.env
 
@@ -40,7 +40,6 @@ services:
     env_file:
       - compose.env
     command: bash -c "
-      cd src &&
       uvicorn api.main:app --port 8000 --host 0.0.0.0"
     depends_on:
       - database
@@ -54,7 +53,6 @@ services:
     env_file:
       - compose.env
     command: bash -c "
-      cd src &&
       python main.py async-consume-batch sample-worker-always-success"
 
 volumes:
