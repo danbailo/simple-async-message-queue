@@ -6,7 +6,7 @@ from tortoise import Tortoise
 
 from common.env_var import get_env_var
 
-from .routes import file_router, record_router
+from .routers import file_router, record_router
 
 app = FastAPI()
 
