@@ -6,7 +6,7 @@ from tortoise.queryset import QuerySet
 
 from api.database.models import SampleIn, SampleOut, SampleModel
 
-from .base_router import CommonQuery
+from .base import CommonQuery
 
 router = APIRouter()
 

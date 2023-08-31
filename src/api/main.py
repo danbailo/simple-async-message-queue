@@ -6,7 +6,7 @@ from tortoise import Tortoise
 
 from common.env_var import get_env_var
 
-from .routers import file_router, record_router
+from .routers import file, record
 
 app = FastAPI()
 
@@ -26,13 +26,13 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(
-    file_router.router,
+    file.router,
     prefix='/file',
     tags=['files']
 )
 
 app.include_router(
-    record_router.router,
+    record.router,
     prefix='/record',
     tags=['records']
 )
