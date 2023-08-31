@@ -3,9 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.test
-    image: my-test-image
+    image: simple-async-mq-test-image
     command: bash -c "python -m pylint src"
-    container_name: pylint-container
+    container_name: simple-async-mq-database-pylint-container
     env_file:
       - compose.env
 
@@ -13,33 +13,49 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.test
-    image: my-test-image
+    image: simple-async-mq-test-image
     command: bash -c "python -m flake8 src"
-    container_name: flake8-container
-    env_file:
-      - compose.env
-
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: my-project-image
-    command: bash -c "
-      cd src &&
-      python main.py execute --option ${MY_VAR}"
-    container_name: app-container
+    container_name: simple-async-mq-database-flake8-container
     env_file:
       - compose.env
 
   database:
     image: postgres:15
     restart: always
-    container_name: app-database-container
+    container_name: simple-async-mq-database-container
     env_file: compose.env
     volumes:
-      - postgres:/var/lib/postgresql/data
+       - postgres:/var/lib/postgresql/data
     ports:
       - ${EXPOSED_DATABASE_PORT}:5432
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: simple-async-mq-image
+    container_name: simple-async-mq-api-container
+    ports:
+      - 8000:8000
+    env_file:
+      - compose.env
+    command: bash -c "
+      cd src &&
+      uvicorn api.main:app --port 8000 --host 0.0.0.0"
+    depends_on:
+      - database
+
+  async-consume-batch:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: simple-async-mq-image
+    container_name: simple-async-mq-async-consume-batch-container
+    env_file:
+      - compose.env
+    command: bash -c "
+      cd src &&
+      python main.py async-consume-batch sample-worker-always-success"
 
 volumes:
   postgres:
