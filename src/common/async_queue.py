@@ -16,6 +16,7 @@ class AsyncQueueConsumer:
     data_to_consume: list[Any]
     action: Coroutine
     queue_size: int
+    action_kwargs: dict[str, Any] = field(default_factory=lambda: {})
 
     _queue: asyncio.Queue = field(default=None, init=False)
 
@@ -35,7 +36,9 @@ class AsyncQueueConsumer:
         tasks = []
         while not self.queue.empty():
             item = await self.queue.get()
-            tasks.append(asyncio.create_task(self.action(item=item)))
+            tasks.append(asyncio.create_task(
+                self.action(item=item, **self.action_kwargs)
+            ))
             self.queue.task_done()
         yield tasks
 
