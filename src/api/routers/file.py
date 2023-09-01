@@ -7,11 +7,13 @@ from pandas import read_excel
 from common.async_queue import AsyncQueueConsumer
 from common.logger import logger
 from common.requests import async_post_create_record
+from common.decorators import async_timeit
 
 router = APIRouter()
 
 
 @router.post("/upload", status_code=204)
+@async_timeit
 async def upload_file(
     files: Annotated[
         list[UploadFile],
