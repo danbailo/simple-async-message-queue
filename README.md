@@ -39,6 +39,14 @@ This speedup is because the used route to upload file was implemented to process
 
 Using the same route above (`/file/upload`) to insert 1k items in message queue.
 
+obs: To simulate a processing time during the creating of message, the method called to create a "record" sleep for 3 seconds and then the message is created.
+
+The application takes `43.26 seconds` to insert 1k items into queue. Internally, the async queue that will process the requests has a size of 400.
+
+It's means that, when this queue is full or the item to process from file is the last, the requests will be called asynchronously.
+
+For this reason the application logged that 400 items was consume, 400(again) and finally 200, totalizing 1000 items(size of uploaded file).
+
 ![Alt text](assets/gif/inserting-1k-items.gif)
 
 ### Consuming workers
@@ -51,7 +59,7 @@ The first one will fetch the queue and when exists some message to consume, get 
 
 The second one will fetch the queue using a batch to return the messages and will consume all batch asynchronously. In this example the batch size is 50, so, 50 items will fetched and consumed shortly thereafter.
 
-While the first approach takes 5 seconds to consume just once message, the second one takes the same time to consume a batch, in this case, 50 items!.
+While the first approach takes 5 seconds to consume just once message, the second one takes the same time to consume a batch, in this case, 50 items!
 
 ![Alt text](assets/gif/consuming-workers.gif)
 
