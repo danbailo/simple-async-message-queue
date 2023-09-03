@@ -76,3 +76,7 @@ While the first approach takes 5 seconds to consume just once message, the secon
     - Database to store data.
 * Pytest
     - used to implements a suit test for API routes.
+* Pandas
+    - used to read data from excel after upload file
+* HTTPX
+    - async client
