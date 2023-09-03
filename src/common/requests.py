@@ -1,3 +1,5 @@
+import asyncio
+
 from typing import Any
 
 from httpx import AsyncClient
@@ -52,6 +54,7 @@ async def async_post_create_record(
     item: dict[str, Any], **kwargs
 ):
     url = f'{BASE_API_URL}/record'
+    await asyncio.sleep(3)
     return await async_fetch(
         'post', url, body=item, return_as_json=False, **kwargs
     )
