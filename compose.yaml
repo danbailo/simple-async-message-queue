@@ -3,9 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.test
-    image: simple-async-mq-test-image
+    image: samq-test-image
     command: bash -c "python -m pylint src"
-    container_name: simple-async-mq-pylint-container
+    container_name: samq-pylint-container
     env_file:
       - compose.env
 
@@ -13,16 +13,26 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.test
-    image: simple-async-mq-test-image
+    image: samq-test-image
     command: bash -c "python -m flake8 src"
-    container_name: simple-async-mq-flake8-container
+    container_name: samq-flake8-container
     env_file:
       - compose.env
+
+  pytest:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    image: samq-test-image
+    command: bash -c "cd src && python -m pytest"
+    container_name: samq-pytest-container
+    env_file:
+      - compose.env    
 
   database:
     image: postgres:15
     restart: always
-    container_name: simple-async-mq-database-container
+    container_name: samq-database-container
     env_file: compose.env
     volumes:
        - postgres:/var/lib/postgresql/data
@@ -33,8 +43,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: simple-async-mq-image
-    container_name: simple-async-mq-api-container
+    image: samq-image
+    container_name: samq-api-container
     ports:
       - 8000:8000
     env_file:
@@ -48,12 +58,46 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: simple-async-mq-image
-    container_name: simple-async-mq-async-consume-batch-container
+    image: samq-image
+    container_name: samq-async-consume-batch-container
     env_file:
       - compose.env
     command: bash -c "
       python main.py async-consume-batch sample-worker-always-success"
+
+  async-consume-single:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: samq-image
+    container_name: samq-async-consume-single-container
+    env_file:
+      - compose.env
+    command: bash -c "
+      python main.py async-consume-single sample-worker-always-success"      
+
+  insert-records-from-excel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: samq-image
+    container_name: samq-insert-records-from-excel-container
+    env_file:
+      - compose.env
+    command: bash -c "
+      python main.py insert-records-from-excel --path '../resources/sample.xlsx'"  
+
+  insert-records-from-excel-100-items:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: samq-image
+    container_name: samq-insert-records-from-excel-100-items-container
+    env_file:
+      - compose.env
+    command: bash -c "
+      python main.py insert-records-from-excel --path '../resources/sample-100-items.xlsx'"  
+
 
 volumes:
   postgres:
