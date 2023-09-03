@@ -30,7 +30,7 @@ The first one will running a container that insert one by one and this operation
 
 The second one will insert the same data using an API route to upload the file(`/file/upload`) and process data. This route takes just `5.25 seconds` to process the data, 12x faster! A nice thing when working with a lot of data.
 
-This speedup is because the used route to upload file was implemented to process data using an [async queue.py](/src/common/async_queue.py)([Queues - Python](https://docs.python.org/3/library/asyncio-queue.html)).
+This speedup is because the used route to upload file was implemented to process data using an [async_queue.py](/src/common/async_queue.py)([Queues - Python](https://docs.python.org/3/library/asyncio-queue.html)).
 
 
 ![Alt text](assets/gif/inserting-items.gif)
